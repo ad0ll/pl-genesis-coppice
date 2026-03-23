@@ -8,15 +8,20 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, ".env") });
 
-const BASE_URL = process.env.GUARDIAN_API_URL || "http://195.201.8.147:3100";
+const DEFAULT_BASE_URL = process.env.GUARDIAN_API_URL || "http://195.201.8.147:3100";
 
 export class GuardianClient {
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
+  private baseUrl: string;
+
+  constructor(baseUrl?: string) {
+    this.baseUrl = baseUrl || DEFAULT_BASE_URL;
+  }
 
   async login(username: string, password: string): Promise<string> {
     // Step 1: Login returns a refreshToken (not an accessToken)
-    const loginRes = await fetch(`${BASE_URL}/api/v1/accounts/login`, {
+    const loginRes = await fetch(`${this.baseUrl}/api/v1/accounts/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -26,7 +31,7 @@ export class GuardianClient {
     this.refreshToken = loginData.refreshToken;
 
     // Step 2: Exchange refreshToken for accessToken
-    const tokenRes = await fetch(`${BASE_URL}/api/v1/accounts/access-token`, {
+    const tokenRes = await fetch(`${this.baseUrl}/api/v1/accounts/access-token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken: this.refreshToken }),
@@ -42,7 +47,7 @@ export class GuardianClient {
     password: string,
     role: "STANDARD_REGISTRY" | "USER"
   ): Promise<void> {
-    const res = await fetch(`${BASE_URL}/api/v1/accounts/register`, {
+    const res = await fetch(`${this.baseUrl}/api/v1/accounts/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password, password_confirmation: password, role }),
@@ -59,13 +64,13 @@ export class GuardianClient {
   }
 
   async get<T>(endpoint: string): Promise<T> {
-    const res = await fetch(`${BASE_URL}${endpoint}`, { headers: this.authHeaders() });
+    const res = await fetch(`${this.baseUrl}${endpoint}`, { headers: this.authHeaders() });
     if (!res.ok) throw new Error(`GET ${endpoint} failed: ${res.status} ${await res.text()}`);
     return res.json() as Promise<T>;
   }
 
   async post<T>(endpoint: string, body: unknown): Promise<T> {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "POST",
       headers: this.authHeaders(),
       body: JSON.stringify(body),
@@ -75,7 +80,7 @@ export class GuardianClient {
   }
 
   async put<T>(endpoint: string, body?: unknown): Promise<T> {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "PUT",
       headers: this.authHeaders(),
       body: body ? JSON.stringify(body) : undefined,
@@ -88,7 +93,7 @@ export class GuardianClient {
 
   async delete(endpoint: string): Promise<void> {
     if (!this.accessToken) throw new Error("Not logged in");
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${this.accessToken}` },
     });
@@ -97,7 +102,7 @@ export class GuardianClient {
 
   async deleteAsync(endpoint: string, maxWaitMs = 600_000): Promise<void> {
     if (!this.accessToken) throw new Error("Not logged in");
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${this.accessToken}` },
     });
@@ -145,7 +150,7 @@ export class GuardianClient {
 
   // Async POST that returns a task ID, then polls for completion
   async postAsync<T>(endpoint: string, body: unknown, maxWaitMs = 180_000): Promise<T> {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "POST",
       headers: this.authHeaders(),
       body: JSON.stringify(body),
@@ -158,7 +163,7 @@ export class GuardianClient {
 
   // Async PUT that returns a task ID, then polls for completion
   async putAsync<T>(endpoint: string, body?: unknown, maxWaitMs = 180_000): Promise<T> {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "PUT",
       headers: this.authHeaders(),
       body: body ? JSON.stringify(body) : undefined,
