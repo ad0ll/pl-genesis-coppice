@@ -76,7 +76,9 @@ export class GuardianClient {
       body: JSON.stringify(body),
     });
     if (!res.ok) throw new Error(`POST ${endpoint} failed: ${res.status} ${await res.text()}`);
-    return res.json() as Promise<T>;
+    const text = await res.text();
+    if (!text || res.status === 204) return undefined as T;
+    return JSON.parse(text) as T;
   }
 
   async put<T>(endpoint: string, body?: unknown): Promise<T> {

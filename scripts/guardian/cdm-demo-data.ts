@@ -50,10 +50,20 @@ const PROJECT_DETAILS = {
 // field2 = activity emissions enum: "Other Renewable Energy" (solar PV)
 // field11 = Net Electricity Displaced - Retrofit (MWh)
 // field12 = Net Electricity Displaced - Non Retrofit (MWh)
+// Option B. Baseline Emissions - Other Systems (required when field1 = "Other Systems")
+const BASELINE_EMISSIONS = {
+  field0: "No",
+  field1: 4200,
+  field2: "Electric Grid",
+  field3: 0.45,
+  field7: 0.45,
+};
+
 export const CDM_PROJECT_DESCRIPTION = {
   field0: PROJECT_DETAILS,
   field1: "Other Systems",
   field2: "Other Renewable Energy",
+  field10: BASELINE_EMISSIONS,
   field11: 4200,
   field12: 0,
 };
@@ -67,10 +77,20 @@ const MONITORING_DETAILS = {
   field22: "Revenue-grade meters recorded 4,110 MWh net generation. Meter calibration certificates valid through 2027. Auxiliary consumption (inverters, tracking motors) metered separately at 90 MWh.",
 };
 
+// Monitoring baseline: same grid emission factor, actual generation
+const MONITORING_BASELINE_EMISSIONS = {
+  field0: "No",
+  field1: 4110,
+  field2: "Electric Grid",
+  field3: 0.45,
+  field7: 0.45,
+};
+
 export const CDM_MONITORING_REPORT = {
   field0: MONITORING_DETAILS,
   field1: "Other Systems",
   field2: "Other Renewable Energy",
+  field10: MONITORING_BASELINE_EMISSIONS,
   field11: 4110,
   field12: 0,
 };
