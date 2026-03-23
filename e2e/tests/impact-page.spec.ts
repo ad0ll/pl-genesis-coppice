@@ -55,12 +55,46 @@ const MOCK_GUARDIAN_DATA = {
 
 test.describe("Impact Page", () => {
   test.beforeEach(async ({ page }) => {
-    // Mock the Guardian API route
+    // Mock the Guardian API route (Instance 1)
     await page.route("**/api/guardian/data", (route) =>
       route.fulfill({
         status: 200,
         contentType: "application/json",
         body: JSON.stringify(MOCK_GUARDIAN_DATA),
+      }),
+    );
+    // Mock the CDM API route (Instance 2) — isolate from real CDM Guardian
+    await page.route("**/api/guardian/cdm", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          projects: [{
+            description: "Mock CDM project",
+            methodology: "AMS-I.F: Renewable electricity generation",
+            technology: "Solar PV",
+            projectParticipant: "Mock Solar Ltd",
+            location: { lat: -1.29, lon: 36.82 },
+            startDate: "2026-01-01",
+            creditingPeriod: { start: "2026-01-01", end: "2033-12-31" },
+            monitoringPeriod: { start: "2026-01-01", end: "2026-12-31" },
+            netElectricityMWh: 4200,
+            sdgContributions: "SDG 7, SDG 13",
+            status: "Validated",
+            evidence: {
+              hash: "mockHash",
+              topicId: "0.0.1234",
+              messageId: "1234567890.000000000",
+              issuer: "did:hedera:testnet:mock",
+              issuanceDate: "2026-03-23T00:00:00Z",
+              proofType: "Ed25519Signature2018",
+            },
+          }],
+          reports: [],
+          cerToken: { tokenId: "0.0.9999999", tokenName: "CER", tokenSymbol: "CER", nftsMinted: 0 },
+          policyName: "CDM AMS-I.F Policy",
+          policyTopicId: "0.0.1234",
+        }),
       }),
     );
   });
@@ -119,14 +153,27 @@ test.describe("Impact Page", () => {
   });
 
   test("should show error state when Guardian is unavailable", async ({ page }) => {
-    // Unroute the beforeEach mock and set up error mock before navigation
+    // Unroute the beforeEach mocks and set up error mocks before navigation
     await page.unrouteAll();
     await page.route("**/api/guardian/data", (route) =>
+      route.fulfill({ status: 503, body: JSON.stringify({ error: "unavailable" }) }),
+    );
+    await page.route("**/api/guardian/cdm", (route) =>
       route.fulfill({ status: 503, body: JSON.stringify({ error: "unavailable" }) }),
     );
     await page.goto("/impact");
     await expect(page.getByText(/Guardian MRV data unavailable/)).toBeVisible({
       timeout: 10000,
     });
+  });
+
+  test("should show Dual Trust Chain section with CDM data", async ({ page }) => {
+    await page.goto("/impact");
+    await expect(page.getByText("Dual Trust Chain")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("CDM AMS-I.F Policy")).toBeVisible();
+    await expect(page.getByText("Bond Issuance")).toBeVisible();
+    await expect(page.getByText("CDM Methodology")).toBeVisible();
+    await expect(page.getByText("Hedera Testnet", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Mock Solar Ltd")).toBeVisible();
   });
 });
