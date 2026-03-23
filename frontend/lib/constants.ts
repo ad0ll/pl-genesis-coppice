@@ -44,9 +44,14 @@ export const CONTRACT_ADDRESSES = {
 export const COUNTRY_RESTRICT_MODULE_ADDRESS: string =
   process.env.NEXT_PUBLIC_COUNTRY_RESTRICT_MODULE_ADDRESS || "0x0000000000000000000000000000000000000000";
 
-// Guardian API (server-side only)
+// Guardian API — Instance 1 (CPC bond MRV policy, server-side only)
 export const GUARDIAN_API_URL = (process.env.GUARDIAN_API_URL || "https://guardian.coppice.cc").trim();
 export const GUARDIAN_POLICY_ID = (process.env.GUARDIAN_POLICY_ID || "").trim();
+
+// Guardian API — Instance 2 (CDM AMS-I.F methodology, server-side only)
+export const CDM_GUARDIAN_API_URL = (process.env.CDM_GUARDIAN_API_URL || "http://195.201.8.147:3200").trim();
+export const CDM_GUARDIAN_POLICY_ID = (process.env.CDM_GUARDIAN_POLICY_ID || "").trim();
+export const CDM_CER_TOKEN_ID = process.env.CDM_CER_TOKEN_ID || "0.0.8350484";
 
 // Bond details — display defaults (will be supplemented by on-chain data from ATS)
 export const BOND_DETAILS = {

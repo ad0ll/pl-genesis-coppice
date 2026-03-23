@@ -53,17 +53,21 @@ async function main() {
     console.log(`Report[0]: ${JSON.stringify(reportGrid.data[0]).slice(0, 300)}`);
   }
 
-  // Check all VC documents via the documents API
-  try {
-    const docs = await client.get<unknown[]>(`/api/v1/policies/${policyId}/documents`);
-    const docArr = Array.isArray(docs) ? docs : [];
-    console.log(`\nAll policy documents: ${docArr.length}`);
-    for (const doc of docArr.slice(0, 5)) {
-      const d = doc as { type?: string; status?: string; createDate?: string };
-      console.log(`  - type=${d.type}, status=${d.status}, created=${d.createDate}`);
+  // Check if project_grid_sr returns full VC data
+  if (projectGrid?.data?.length) {
+    const proj = projectGrid.data[0] as Record<string, unknown>;
+    console.log(`\nProject VC keys: ${Object.keys(proj).join(", ")}`);
+    const doc = proj.document as { credentialSubject?: unknown[] } | undefined;
+    if (doc?.credentialSubject?.length) {
+      const cs = doc.credentialSubject[0] as Record<string, unknown>;
+      const details = cs.field0 as Record<string, unknown> | undefined;
+      console.log(`  CS field0.field0 (description): ${String(details?.field0).slice(0, 100)}`);
+      console.log(`  CS field0.field9 (PP name): ${details?.field9}`);
+      console.log(`  CS field0.field18 (methodology): ${JSON.stringify(details?.field18)}`);
     }
-  } catch (err) {
-    console.log(`\nDocuments API: ${(err as Error).message.slice(0, 200)}`);
+    console.log(`  hash: ${proj.hash}`);
+    console.log(`  topicId: ${proj.topicId}`);
+    console.log(`  messageId: ${proj.messageId}`);
   }
 
   // Check trust chain

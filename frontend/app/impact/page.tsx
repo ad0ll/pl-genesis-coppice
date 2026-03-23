@@ -8,6 +8,7 @@ import { ProjectCard } from "@/components/guardian/project-card";
 import { SptStatus } from "@/components/guardian/spt-status";
 import { AllocationBar } from "@/components/guardian/allocation-bar";
 import { SectionErrorBoundary } from "@/components/section-error-boundary";
+import { DualTrustChain } from "@/components/guardian/dual-trust-chain";
 import { AddressLink } from "@/components/ui/hashscan-link";
 import { entranceProps } from "@/lib/animation";
 
@@ -142,9 +143,16 @@ export default function ImpactPage() {
         )}
       </section>
 
+      {/* Dual Trust Chain — CDM Methodology (Instance 2) */}
+      <section {...entranceProps(4)}>
+        <SectionErrorBoundary section="CDM methodology data">
+          <DualTrustChain />
+        </SectionErrorBoundary>
+      </section>
+
       {/* ICMA Compliance Evidence */}
       {data && data.bondFramework && (
-        <section {...entranceProps(4)}>
+        <section {...entranceProps(5)}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="card-title mb-0">ICMA Compliance Evidence</h2>
             <div className="flex items-center gap-2">

@@ -154,3 +154,68 @@ export interface GuardianData {
   sptTarget: number;
   sptMet: boolean;
 }
+
+// CDM AMS-I.F types (Instance 2 — carbon methodology VCs)
+// Field names use generic "fieldN" keys from Guardian schema
+
+export interface CDMProjectDetails {
+  field0: string;   // Description
+  field1: string;   // Sectoral scope
+  field2: string[]; // Technology (e.g. "Solar PV")
+  field3: string[]; // Project type (e.g. "Greenfield")
+  field4: string;   // Scale ("Small Scale")
+  field5: string;   // Latitude
+  field6: string;   // Longitude
+  field9: string;   // PP organization name
+  field18: string[]; // Methodology (e.g. "AMS-I.F: ...")
+  field19: string;  // Start date
+  field20: Array<{ field0: string; field1: string }>; // Crediting period
+  field21: Array<{ field0: string; field1: string }>; // Monitoring period
+  field22: string;  // Monitoring plan
+  field24: string;  // SDG contributions
+}
+
+export interface CDMProjectCS {
+  field0: CDMProjectDetails;
+  field1: string;   // Baseline type ("Other Systems")
+  field2: string;   // Activity type ("Other Renewable Energy")
+  field11: number;  // Net electricity displaced (MWh)
+  field12: number;  // Net electricity displaced non-retrofit (MWh)
+}
+
+export interface CDMProject {
+  description: string;
+  methodology: string;
+  technology: string;
+  projectParticipant: string;
+  location: { lat: number; lon: number };
+  startDate: string;
+  creditingPeriod: { start: string; end: string };
+  monitoringPeriod: { start: string; end: string };
+  netElectricityMWh: number;
+  sdgContributions: string;
+  status: string;
+  evidence: VCEvidence;
+}
+
+export interface CDMMonitoringReport {
+  description: string;
+  monitoringPeriod: { start: string; end: string };
+  netElectricityMWh: number;
+  monitoringPlan: string;
+  status: string;
+  evidence: VCEvidence;
+}
+
+export interface CDMData {
+  projects: CDMProject[];
+  reports: CDMMonitoringReport[];
+  cerToken: {
+    tokenId: string;
+    tokenName: string;
+    tokenSymbol: string;
+    nftsMinted: number;
+  } | null;
+  policyName: string;
+  policyTopicId: string;
+}
