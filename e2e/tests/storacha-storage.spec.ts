@@ -91,8 +91,8 @@ test.describe("Storacha Decentralized Storage", () => {
     await expect(page.getByText("Decentralized Storage")).toBeVisible({ timeout: 10000 });
     // 1 bond framework + 1 registration + 1 allocation + 1 verification = 4
     const documentsSection = page.locator("section", { hasText: "Decentralized Storage" });
-    await expect(documentsSection.locator(".stat-label", { hasText: "Documents" })).toBeVisible();
-    await expect(documentsSection.getByText("4")).toBeVisible();
+    await expect(documentsSection.getByText("Documents", { exact: true })).toBeVisible();
+    await expect(documentsSection.getByText("4", { exact: true })).toBeVisible();
   });
 
   test("should show IPFS provider and persistence info", async ({ page }) => {
