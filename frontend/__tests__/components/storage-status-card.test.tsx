@@ -28,14 +28,18 @@ const mockEvidence: VCEvidence = {
   proofType: "Ed25519Signature2018",
 };
 
-function buildGuardianData(projectCount: number): GuardianData {
+function buildGuardianData(projectCount: number, opts?: { includeAllEvidence?: boolean }): GuardianData {
   const projects = Array.from({ length: projectCount }, (_, i) => ({
     registration: { ProjectName: `Project ${i + 1}`, ICMACategory: "Renewable Energy", SubCategory: "Solar", Country: "DE", Location: "Berlin", Capacity: 100, CapacityUnit: "MW", ProjectLifetimeYears: 25, AnnualTargetCO2e: 5000 },
     registrationEvidence: { ...mockEvidence, hash: `QmReg${i}` },
     allocationEvidence: { ...mockEvidence, hash: `QmAlloc${i}` },
+    ...(opts?.includeAllEvidence ? {
+      mrvEvidence: { ...mockEvidence, hash: `QmMrv${i}` },
+      verificationEvidence: { ...mockEvidence, hash: `QmVerif${i}` },
+    } : {}),
     allocation: { ProjectName: `Project ${i + 1}`, SignedAmountEUSD: 100000, AllocatedAmountEUSD: 50000, ShareofFinancingPercent: 50, AllocationDate: "2026-03-01", Purpose: "Solar farm", HederaTransactionID: "0.0.1-123-000" },
-    isVerified: false,
-    verifiedCO2e: 0,
+    isVerified: opts?.includeAllEvidence ?? false,
+    verifiedCO2e: opts?.includeAllEvidence ? 5000 : 0,
     createDate: "2026-03-01T00:00:00Z",
   }));
   return {
@@ -88,7 +92,7 @@ describe("StorageStatusCard", () => {
     expect(screen.getByText("Filecoin Mainnet")).toBeInTheDocument();
   });
 
-  it("shows 'Local Node' when Storacha not configured", () => {
+  it("shows 'Local Node' when Storacha not configured and hides View links", () => {
     const guardianData = buildGuardianData(1);
     vi.mocked(useQuery).mockReturnValue({ data: guardianData, isLoading: false, error: null } as ReturnType<typeof useQuery>);
     vi.mocked(isStorachaConfigured).mockReturnValue(false);
@@ -96,6 +100,7 @@ describe("StorageStatusCard", () => {
     render(<StorageStatusCard />);
     expect(screen.getByText("Local Node")).toBeInTheDocument();
     expect(screen.getByText("Guardian IPFS")).toBeInTheDocument();
+    expect(screen.queryAllByText("View")).toHaveLength(0);
   });
 
   it("renders View links when Storacha is configured", () => {
@@ -108,6 +113,19 @@ describe("StorageStatusCard", () => {
     const viewLinks = screen.getAllByText("View");
     expect(viewLinks.length).toBeGreaterThan(0);
     expect(viewLinks[0].closest("a")).toHaveAttribute("href", "/api/guardian/ipfs/QmBondFramework");
+  });
+
+  it("counts all evidence types including MRV and verification", () => {
+    const guardianData = buildGuardianData(1, { includeAllEvidence: true });
+    vi.mocked(useQuery).mockReturnValue({ data: guardianData, isLoading: false, error: null } as ReturnType<typeof useQuery>);
+    vi.mocked(isStorachaConfigured).mockReturnValue(true);
+    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `/api/guardian/ipfs/${cid}`);
+
+    render(<StorageStatusCard />);
+    // 1 bond framework + 1 project * 4 evidence (reg + alloc + mrv + verif) = 5
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(screen.getByText(/MRV Report/)).toBeInTheDocument();
+    expect(screen.getByText(/Verification/)).toBeInTheDocument();
   });
 
   it("renders zero documents when no Guardian data", () => {
