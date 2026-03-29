@@ -151,6 +151,49 @@ The Sustainability Performance Target ties the coupon rate to **verified MRV dat
 
 The [create-coupon API](frontend/app/api/issuer/create-coupon/route.ts) is hard-gated by the [SPT enforcement module](frontend/lib/spt-enforcement.ts): if the SPT is missed, coupons cannot be created below the penalty rate. Coupons are distributed on-chain via the [LifeCycleCashFlow contract](contracts/contracts/mass-payout/LifeCycleCashFlow.sol) using ATS snapshots — the issuer cannot override the penalty.
 
+## Decentralized Storage — Storacha + Filecoin
+
+Coppice stores all Guardian Verifiable Credentials on IPFS via [Storacha](https://storacha.network/) (formerly web3.storage), which automatically creates Filecoin mainnet storage deals for long-term persistence.
+
+**Data integrity chain:**
+1. **Hedera HCS** — Immutable timestamps for every VC
+2. **IPFS / Storacha** — Content-addressed storage with hot retrieval via `w3s.link` gateway
+3. **Filecoin Mainnet** — Storacha automatically persists all IPFS content to Filecoin storage deals
+
+This gives every environmental compliance document three independent layers of verifiability: timestamped on Hedera, content-addressed on IPFS, and persistently stored on Filecoin.
+
+### How It Works
+
+Guardian's IPFS provider is configured to use Storacha (`IPFS_PROVIDER="web3storage"`). When a VC is created (project registration, fund allocation, MRV report, verification statement), Guardian stores the document on IPFS through Storacha. Storacha handles Filecoin deal creation automatically — no custom upload code needed.
+
+The frontend surfaces this storage layer:
+- **Impact page** — "Decentralized Storage" card showing document count, IPFS provider, and persistence layer
+- **Evidence rows** — "View on Storacha" links for each VC document alongside existing IPFS and HashScan links
+
+### Setup (Guardian VPS)
+
+```bash
+# Install Storacha CLI
+npm install -g @storacha/cli
+
+# Login and create space
+storacha login <email>
+storacha space create "coppice-guardian"
+
+# Generate key and delegation proof
+storacha key create                              # Save Mg... as IPFS_STORAGE_KEY
+storacha delegation create <did:key:...> --base64  # Save as IPFS_STORAGE_PROOF
+
+# SSH into Guardian VPS and configure
+# Edit ./configs/.env.<env>.guardian.system:
+#   IPFS_PROVIDER="web3storage"
+#   IPFS_STORAGE_KEY="Mg..."
+#   IPFS_STORAGE_PROOF="<base64>"
+
+# Restart Guardian
+docker compose down && docker compose up -d
+```
+
 ## Project Structure
 
 ```
