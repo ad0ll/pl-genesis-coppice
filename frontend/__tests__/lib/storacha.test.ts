@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { storachaGatewayUrl, isStorachaConfigured } from "@/lib/storacha";
 
 describe("storachaGatewayUrl", () => {

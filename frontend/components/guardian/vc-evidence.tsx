@@ -1,5 +1,6 @@
 import type { VCEvidence } from "@/lib/guardian-types";
 import { hashScanTxUrl } from "@/components/ui/hashscan-link";
+import { storachaGatewayUrl, isStorachaConfigured } from "@/lib/storacha";
 
 function abbreviateDid(did: string): string {
   const parts = did.split("_");
@@ -47,6 +48,12 @@ export function VCEvidenceRow({ label, evidence, children }: VCEvidenceRowProps)
           className="text-[11px] sm:text-xs text-bond-green hover:text-bond-green/80 transition-colors">
           View on HashScan
         </a>
+        {isStorachaConfigured() && storachaGatewayUrl(evidence.hash) && (
+          <a href={storachaGatewayUrl(evidence.hash)!} target="_blank" rel="noopener noreferrer"
+            className="text-[11px] sm:text-xs text-bond-green hover:text-bond-green/80 transition-colors">
+            View on Storacha
+          </a>
+        )}
       </div>
     </div>
   );

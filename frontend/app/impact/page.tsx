@@ -9,6 +9,7 @@ import { SptStatus } from "@/components/guardian/spt-status";
 import { AllocationBar } from "@/components/guardian/allocation-bar";
 import { SectionErrorBoundary } from "@/components/section-error-boundary";
 import { AddressLink } from "@/components/ui/hashscan-link";
+import { StorageStatusCard } from "@/components/filecoin/storage-status-card";
 import { entranceProps } from "@/lib/animation";
 
 function MetricsSkeleton() {
@@ -219,6 +220,13 @@ export default function ImpactPage() {
             </div>
           </div>
         </section>
+      )}
+
+      {/* Decentralized Storage */}
+      {data && (
+        <div {...entranceProps(5)}>
+          <StorageStatusCard />
+        </div>
       )}
     </div>
   );
