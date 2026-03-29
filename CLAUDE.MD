@@ -35,6 +35,8 @@ Compliant green bond tokenization using ERC-3643 (via Hedera ATS) on Hedera for 
 - Guardian data proxy: frontend/app/api/guardian/data/route.ts
 - Hedera server utils: frontend/lib/hedera.ts
 - Guardian scripts: scripts/guardian/
+- Storacha helper: frontend/lib/storacha.ts (gateway URL builder, config flag)
+- Storage status card: frontend/components/filecoin/storage-status-card.tsx
 
 ## Deployed Contracts & Topics
 
@@ -47,6 +49,14 @@ Compliant green bond tokenization using ERC-3643 (via Hedera ATS) on Hedera for 
 - Audit HCS Topic: 0.0.8214934
 - Impact HCS Topic: 0.0.8214935 (deprecated — allocations now go through Guardian API)
 - eUSD Token (HTS): 0.0.8214937
+
+## Storacha / Filecoin Integration
+
+- Guardian IPFS provider set to `"web3storage"` (Storacha) on VPS
+- Storacha auto-persists IPFS content to Filecoin mainnet storage deals
+- Gateway: `https://<cid>.ipfs.w3s.link`
+- Frontend flag: `NEXT_PUBLIC_STORACHA_ENABLED=true` (set after Guardian VPS config)
+- Guardian VPS config: `IPFS_PROVIDER`, `IPFS_STORAGE_KEY`, `IPFS_STORAGE_PROOF` in `./configs/.env.<env>.guardian.system`
 
 ## Demo Wallets
 
