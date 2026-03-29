@@ -60,7 +60,7 @@ describe("StorageStatusCard", () => {
     const guardianData = buildGuardianData(1);
     vi.mocked(useQuery).mockReturnValue({ data: guardianData, isLoading: false, error: null } as ReturnType<typeof useQuery>);
     vi.mocked(isStorachaConfigured).mockReturnValue(true);
-    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `https://${cid}.ipfs.w3s.link`);
+    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `/api/guardian/ipfs/${cid}`);
 
     render(<StorageStatusCard />);
     expect(screen.getByText("Decentralized Storage")).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe("StorageStatusCard", () => {
     const guardianData = buildGuardianData(2);
     vi.mocked(useQuery).mockReturnValue({ data: guardianData, isLoading: false, error: null } as ReturnType<typeof useQuery>);
     vi.mocked(isStorachaConfigured).mockReturnValue(true);
-    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `https://${cid}.ipfs.w3s.link`);
+    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `/api/guardian/ipfs/${cid}`);
 
     render(<StorageStatusCard />);
     // 1 bond framework + 2 projects * 2 evidence each (reg + alloc) = 5
@@ -81,7 +81,7 @@ describe("StorageStatusCard", () => {
     const guardianData = buildGuardianData(1);
     vi.mocked(useQuery).mockReturnValue({ data: guardianData, isLoading: false, error: null } as ReturnType<typeof useQuery>);
     vi.mocked(isStorachaConfigured).mockReturnValue(true);
-    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `https://${cid}.ipfs.w3s.link`);
+    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `/api/guardian/ipfs/${cid}`);
 
     render(<StorageStatusCard />);
     expect(screen.getByText("Storacha")).toBeInTheDocument();
@@ -102,12 +102,12 @@ describe("StorageStatusCard", () => {
     const guardianData = buildGuardianData(1);
     vi.mocked(useQuery).mockReturnValue({ data: guardianData, isLoading: false, error: null } as ReturnType<typeof useQuery>);
     vi.mocked(isStorachaConfigured).mockReturnValue(true);
-    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `https://${cid}.ipfs.w3s.link`);
+    vi.mocked(storachaGatewayUrl).mockImplementation((cid) => `/api/guardian/ipfs/${cid}`);
 
     render(<StorageStatusCard />);
     const viewLinks = screen.getAllByText("View");
     expect(viewLinks.length).toBeGreaterThan(0);
-    expect(viewLinks[0].closest("a")).toHaveAttribute("href", "https://QmBondFramework.ipfs.w3s.link");
+    expect(viewLinks[0].closest("a")).toHaveAttribute("href", "/api/guardian/ipfs/QmBondFramework");
   });
 
   it("renders zero documents when no Guardian data", () => {

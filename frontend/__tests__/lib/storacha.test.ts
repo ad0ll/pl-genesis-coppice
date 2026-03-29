@@ -2,18 +2,18 @@ import { describe, it, expect, afterEach } from "vitest";
 import { storachaGatewayUrl, isStorachaConfigured } from "@/lib/storacha";
 
 describe("storachaGatewayUrl", () => {
-  it("builds correct gateway URL from IPFS CID", () => {
+  it("builds correct proxy URL from IPFS CID", () => {
     const url = storachaGatewayUrl("QmTest123abc");
-    expect(url).toBe("https://QmTest123abc.ipfs.w3s.link");
+    expect(url).toBe("/api/guardian/ipfs/QmTest123abc");
   });
 
   it("returns null for empty CID", () => {
     expect(storachaGatewayUrl("")).toBeNull();
   });
 
-  it("handles base32 CIDv1", () => {
-    const cid = "bafybeiemxf5abjwjbikoz4mc3a3dla6ual3jsgpdr4cjr3oz3evfyavhwq";
-    expect(storachaGatewayUrl(cid)).toBe(`https://${cid}.ipfs.w3s.link`);
+  it("handles base58btc multihash from Guardian", () => {
+    const cid = "9rCGZCnJeUJhpmoBqgrTMCWCJiApXreyJGhjYm9bW3p6";
+    expect(storachaGatewayUrl(cid)).toBe(`/api/guardian/ipfs/${cid}`);
   });
 });
 
