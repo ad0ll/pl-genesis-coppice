@@ -103,6 +103,20 @@ We've done a lot of stuff. If you want to see a full trail from HCS, there's an 
   
   Right now the environmental data is submitted manually through Guardian. In a later version though, we could automate reporting with digital MRV by streaming data from sensors and other projects.
 
+## SECTION 5b: Decentralized Storage — Storacha + Filecoin
+
+Now if I scroll down a bit, there's this Decentralized Storage section.
+
+So all those Verifiable Credentials we just looked at — the registrations, allocations, MRV reports, verifications — Guardian is storing those on IPFS through Storacha.
+
+Storacha automatically creates Filecoin mainnet storage deals for everything it touches, so this evidence isn't just sitting on our Guardian server. It's persisted on Filecoin.
+
+You can see all 13 documents here with their CIDs. I can click "View" on any of them to pull the raw VC back from IPFS.
+
+The key thing is this data integrity chain at the bottom — Hedera HCS gives us timestamps, IPFS gives us content addressing, and Filecoin gives us persistent storage. So even if our Guardian server goes down, the anti-greenwashing evidence is still out there and verifiable.
+
+That matters because this evidence needs to hold up years from now, not just during the demo.
+
 ## Section 6: Distribution
 
 Moving on
