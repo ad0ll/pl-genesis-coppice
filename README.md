@@ -168,7 +168,7 @@ Guardian's IPFS provider is configured to use Storacha (`IPFS_PROVIDER="web3stor
 
 The frontend surfaces this storage layer:
 - **Impact page** — "Decentralized Storage" card showing document count, IPFS provider, and persistence layer
-- **Evidence rows** — "View on Storacha" links for each VC document alongside existing IPFS and HashScan links
+- **Archived documents** — View links for each VC document stored via Storacha, routed through the Guardian IPFS proxy
 
 ### Setup (Guardian VPS)
 
